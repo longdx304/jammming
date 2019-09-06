@@ -5,18 +5,30 @@ import SearchBar from '../SearchBar/SearchBar';
 import SearchResults from '../SearchResults/SearchResults';
 import Playlist from '../Playlist/Playlist';
 
-const track = {
-  id: '1',
-  name: 'Tiny Dancer',
-  artist: 'Elton John',
-  album: 'Madman Across The Water'
-}
-
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      searchResults: [track, track, track]
+      searchResults: [
+        {
+          id: '1',
+          name: 'Tiny Dancer',
+          artist: 'Elton John',
+          album: 'Madman Across The Water'
+        },
+        {
+          id: '2',
+          name: 'Stronger',
+          artist: 'Britney Spears',
+          album: 'Oops!... I Did It Again'
+        },
+        {
+          id: '3',
+          name: 'So Emotional',
+          artist: 'Whitney Houston',
+          album: 'Whitney'
+        }
+      ]
     }
   }
   
