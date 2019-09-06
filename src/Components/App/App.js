@@ -28,6 +28,27 @@ class App extends React.Component {
           artist: 'Whitney Houston',
           album: 'Whitney'
         }
+      ],
+      playlistName: 'My Playlist',
+      playlistTracks: [
+        {
+          id: '1',
+          name: 'Tiny Dancer',
+          artist: 'Elton John',
+          album: 'Madman Across The Water'
+        },
+        {
+          id: '2',
+          name: 'Stronger',
+          artist: 'Britney Spears',
+          album: 'Oops!... I Did It Again'
+        },
+        {
+          id: '3',
+          name: 'So Emotional',
+          artist: 'Whitney Houston',
+          album: 'Whitney'
+        }
       ]
     }
   }
@@ -40,7 +61,7 @@ class App extends React.Component {
           <SearchBar />
           <div className="App-playlist">
             <SearchResults searchResults={this.state.searchResults} />
-            <Playlist />
+            <Playlist playlistName={this.state.playlistName} playlistTracks={this.state.playlistTracks} />
           </div>
         </div>
       </div>
