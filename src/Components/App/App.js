@@ -5,51 +5,55 @@ import SearchBar from '../SearchBar/SearchBar';
 import SearchResults from '../SearchResults/SearchResults';
 import Playlist from '../Playlist/Playlist';
 
+const searchTracks = [
+  {
+    id: '1',
+    name: 'Tiny Dancer',
+    artist: 'Elton John',
+    album: 'Madman Across The Water'
+  },
+  {
+    id: '2',
+    name: 'Stronger',
+    artist: 'Britney Spears',
+    album: 'Oops!... I Did It Again'
+  },
+  {
+    id: '3',
+    name: 'So Emotional',
+    artist: 'Whitney Houston',
+    album: 'Whitney'
+  }
+]
+
+const savedPlaylistTracks = [
+  {
+    id: '1',
+    name: 'Tiny Dancer',
+    artist: 'Elton John',
+    album: 'Madman Across The Water'
+  }
+]
+
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      searchResults: [
-        {
-          id: '1',
-          name: 'Tiny Dancer',
-          artist: 'Elton John',
-          album: 'Madman Across The Water'
-        },
-        {
-          id: '2',
-          name: 'Stronger',
-          artist: 'Britney Spears',
-          album: 'Oops!... I Did It Again'
-        },
-        {
-          id: '3',
-          name: 'So Emotional',
-          artist: 'Whitney Houston',
-          album: 'Whitney'
-        }
-      ],
+      searchResults: searchTracks,
       playlistName: 'My Playlist',
-      playlistTracks: [
-        {
-          id: '1',
-          name: 'Tiny Dancer',
-          artist: 'Elton John',
-          album: 'Madman Across The Water'
-        },
-        {
-          id: '2',
-          name: 'Stronger',
-          artist: 'Britney Spears',
-          album: 'Oops!... I Did It Again'
-        },
-        {
-          id: '3',
-          name: 'So Emotional',
-          artist: 'Whitney Houston',
-          album: 'Whitney'
-        }
-      ]
+      playlistTracks: savedPlaylistTracks
+    }
+    this.addTrack = this.addTrack.bind(this);
+  }
+
+  addTrack(track) {
+    if (this.state.playlistTracks.find(savedTrack => savedTrack.id === track.id)) {
+      return;
+    } else {
+      savedPlaylistTracks.push(track);
+      this.setState({
+        playlistTracks: savedPlaylistTracks
+      });
     }
   }
   
@@ -60,7 +64,7 @@ class App extends React.Component {
         <div className="App">
           <SearchBar />
           <div className="App-playlist">
-            <SearchResults searchResults={this.state.searchResults} />
+            <SearchResults searchResults={this.state.searchResults} onAdd={this.addTrack} />
             <Playlist playlistName={this.state.playlistName} playlistTracks={this.state.playlistTracks} />
           </div>
         </div>
