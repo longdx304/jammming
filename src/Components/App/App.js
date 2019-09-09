@@ -6,15 +6,7 @@ import SearchResults from '../SearchResults/SearchResults';
 import Playlist from '../Playlist/Playlist';
 import Spotify from '../../util/Spotify';
 
-let savedPlaylistTracks = [
-  {
-    id: '1',
-    name: 'Tiny Dancer',
-    artist: 'Elton John',
-    album: 'Madman Across The Water',
-    uri: `uri1`
-  }
-]
+let savedPlaylistTracks = []
 
 class App extends React.Component {
   constructor(props) {
@@ -22,7 +14,7 @@ class App extends React.Component {
     this.state = {
       searchResults: [],
       playlistName: 'New Playlist',
-      playlistTracks: savedPlaylistTracks
+      playlistTracks: []
     }
     this.addTrack = this.addTrack.bind(this);
     this.removeTrack = this.removeTrack.bind(this);
@@ -65,7 +57,13 @@ class App extends React.Component {
     const trackURIs = this.state.playlistTracks.map(playlistTrack => {
       return playlistTrack.uri;
     })
-    console.log(trackURIs);
+    Spotify.savePlaylist(this.state.playlistName, trackURIs).then(snapshotId => {
+      savedPlaylistTracks = [];
+      this.setState({
+        playlistName: 'New Playlist',
+        playlistTracks: savedPlaylistTracks
+      });
+    })
   }
 
   search(term) {
