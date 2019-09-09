@@ -4,6 +4,7 @@ import './App.css';
 import SearchBar from '../SearchBar/SearchBar';
 import SearchResults from '../SearchResults/SearchResults';
 import Playlist from '../Playlist/Playlist';
+import Spotify from '../../util/Spotify';
 
 const searchTracks = [
   {
@@ -89,6 +90,7 @@ class App extends React.Component {
 
   search(term) {
     console.log(term);
+    Spotify.getAccessToken();
   }
   
   render() {

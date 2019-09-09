@@ -20,7 +20,6 @@ class SearchBar extends React.Component {
         this.setState({
             term: event.target.value
         });
-        console.log(this.state.term);
     }
 
     render() {
