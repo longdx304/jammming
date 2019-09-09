@@ -40,35 +40,36 @@ const Spotify = {
             console.log("No Name or Track URIs");
             return;
         } else {
-            const headers = {Authorization: `Bearer ${accessToken}`};
-            return fetch('https://api.spotify.com/v1/me', {headers: headers}).then(response => {
+            return fetch('https://api.spotify.com/v1/me', {headers: {Authorization: `Bearer ${accessToken}`}}).then(response => {
                 return response.json();
             }).then(jsonResponse => {
                 return jsonResponse.id;
             }).then(userId => {
-                const postHeaders = {
-                    Authorization: `Bearer ${accessToken}`,
-                    'Content-Type': 'application/json'
-                }
                 return fetch(`https://api.spotify.com/v1/users/${userId}/playlists`, {
-                    headers: postHeaders,
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json'
+                    },
                     method: 'POST',
                     body: JSON.stringify({'name': `${name}`})
-                }).then(response => {
-                    return response.json();
-                 }).then(jsonResponse => {
-                    return jsonResponse.id;
-                 }).then(playlistId => {
-                     return fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
-                         headers: postHeaders,
-                         method: 'POST',
-                         body: JSON.stringify({'uris': trackURIs})
-                     }).then(response => {
-                         return response.json();
-                     }).then(jsonResponse => {
-                         return jsonResponse.snapshot_id;
-                     })
-                 })
+                })
+            }).then(response => {
+                return response.json();
+            }).then(jsonResponse => {
+                return jsonResponse.id;
+            }).then(playlistId => {
+                return fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    method: 'POST',
+                    body: JSON.stringify({'uris': trackURIs})
+                })
+            }).then(response => {
+                return response.json();
+            }).then(jsonResponse => {
+                return jsonResponse.snapshot_id;
             })
         }
     }
