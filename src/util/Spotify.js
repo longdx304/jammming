@@ -1,6 +1,7 @@
 const clientId = 'ca48cb9fa91b425f851609ca6a239fc1';
 const redirectUri = 'http://localhost:3000/';
 let accessToken = '';
+
 const Spotify = {
     getAccessToken: () => {
         if (accessToken) {
@@ -15,62 +16,49 @@ const Spotify = {
             window.location = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&scope=playlist-modify-public&redirect_uri=${redirectUri}`;
         }
     },
-    search: async (term) => {
+    asyncReq: async (endpoint, postBody) => {
         try {
-            const response = await fetch(`https://api.spotify.com/v1/search?type=track&q=${term}`, {headers: {Authorization: `Bearer ${accessToken}`}});
+            const getHeaders = {
+                headers: {Authorization: `Bearer ${accessToken}`}
+            };
+            const postHeaders = {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json'
+                },
+                method: 'POST',
+                body: postBody
+            }
+            const response = await fetch(endpoint, postBody ? postHeaders : getHeaders);
             if (response.ok) {
                 const jsonResponse = await response.json();
-                return jsonResponse.tracks.items.map(track => {
-                    return({
-                        id: track.id,
-                        name: track.name,
-                        artist: track.artists[0].name,
-                        album: track.album.name,
-                        uri: track.uri
-                    });
-                });
+                return jsonResponse;
             }
             throw new Error('Request failed!');
         } catch(error) {
-            return console.log(error);
+            console.log(error);
         }
     },
-    savePlaylist: (name, trackURIs) => {
+    search: async (term) => {
+        const searchedTracks = await Spotify.asyncReq(`https://api.spotify.com/v1/search?type=track&q=${term}`);
+        return searchedTracks.tracks.items.map(track => {
+            return({
+                id: track.id,
+                name: track.name,
+                artist: track.artists[0].name,
+                album: track.album.name,
+                uri: track.uri
+            });
+        });
+    },
+    savePlaylist: async (name, trackURIs) => {
         if (!name || trackURIs.length===0) {
             console.log("No Name or Track URIs");
             return;
         } else {
-            return fetch('https://api.spotify.com/v1/me', {headers: {Authorization: `Bearer ${accessToken}`}}).then(response => {
-                return response.json();
-            }).then(jsonResponse => {
-                return jsonResponse.id;
-            }).then(userId => {
-                return fetch(`https://api.spotify.com/v1/users/${userId}/playlists`, {
-                    headers: {
-                        Authorization: `Bearer ${accessToken}`,
-                        'Content-Type': 'application/json'
-                    },
-                    method: 'POST',
-                    body: JSON.stringify({'name': `${name}`})
-                })
-            }).then(response => {
-                return response.json();
-            }).then(jsonResponse => {
-                return jsonResponse.id;
-            }).then(playlistId => {
-                return fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
-                    headers: {
-                        Authorization: `Bearer ${accessToken}`,
-                        'Content-Type': 'application/json'
-                    },
-                    method: 'POST',
-                    body: JSON.stringify({'uris': trackURIs})
-                })
-            }).then(response => {
-                return response.json();
-            }).then(jsonResponse => {
-                return jsonResponse.snapshot_id;
-            })
+            const userProfile = await Spotify.asyncReq('https://api.spotify.com/v1/me');
+            const playlist = await Spotify.asyncReq(`https://api.spotify.com/v1/users/${userProfile.id}/playlists`, JSON.stringify({'name': `${name}`}));
+            return await Spotify.asyncReq(`https://api.spotify.com/v1/playlists/${playlist.id}/tracks`, JSON.stringify({'uris': trackURIs}));
         }
     }
 }

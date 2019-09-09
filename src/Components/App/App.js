@@ -57,7 +57,7 @@ class App extends React.Component {
     const trackURIs = this.state.playlistTracks.map(playlistTrack => {
       return playlistTrack.uri;
     })
-    Spotify.savePlaylist(this.state.playlistName, trackURIs).then(snapshotId => {
+    Spotify.savePlaylist(this.state.playlistName, trackURIs).then(playlistVersion => {
       savedPlaylistTracks = [];
       this.setState({
         playlistName: 'New Playlist',
