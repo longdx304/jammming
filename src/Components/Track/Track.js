@@ -1,7 +1,40 @@
-import React from 'react';
+import React, {useState} from 'react';
 import './Track.css';
 
-class Track extends React.Component {
+function Track(props) {
+    const [play, setPlay] = useState(false);
+    
+    function tooglePlay(event) {
+        const preview = document.getElementById(`preview_${props.track.id}`);
+        setPlay(!play);
+        play ? preview.pause() : preview.play();
+        
+    }
+
+    function addTrack(event) {
+        props.onAdd(props.track);
+    }
+
+    function removeTrack(event) {
+        props.onRemove(props.track);
+    }
+
+    return(
+        <div className="Track">
+            <div className="Track-information">
+                <h3>{props.track.name}</h3>
+                <p>{props.track.artist} | {props.track.album}</p>
+                <audio src={props.track.previewUrl} id={`preview_${props.track.id}`} />
+            </div>
+            <div>
+                <button onClick={props.track.previewUrl ? tooglePlay : null}><i className={play ? "fas fa-pause" : "fas fa-play"}></i></button>
+                <button onClick={props.isRemoval ? removeTrack : addTrack} className="Track-action">{props.isRemoval ? '-' : '+'}</button>
+            </div>
+        </div>
+    );
+}
+
+/* class Track extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -48,6 +81,6 @@ class Track extends React.Component {
             </div>
         );
     }
-}
+} */
 
 export default Track;

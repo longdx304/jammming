@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import './App.css';
 
 import SearchBar from '../SearchBar/SearchBar';
@@ -6,9 +6,69 @@ import SearchResults from '../SearchResults/SearchResults';
 import Playlist from '../Playlist/Playlist';
 import Spotify from '../../util/Spotify';
 
-let savedPlaylistTracks = []
+let savedPlaylistTracks = [];
 
-class App extends React.Component {
+function App() {
+  const [searchResults, setSearchResults] = useState([]);
+  const [playlistName, setPlaylistName] = useState('New Playlist');
+  const [playlistTracks, setPlaylistTracks] = useState([]);
+
+  useEffect(() => {
+    Spotify.getAccessToken();
+  });
+
+  function removeTrack(track) {
+    savedPlaylistTracks = playlistTracks.filter((savedTrack, index, arr) => {
+      return savedTrack.id !== track.id
+    });
+    setPlaylistTracks(savedPlaylistTracks);
+  }
+
+  function updatePlaylistName(name) {
+    setPlaylistName(name);
+  }
+
+  function savePlaylist() {
+    const trackURIs = playlistTracks.map(playlistTrack => {
+      return playlistTrack.uri;
+    })
+    Spotify.savePlaylist(playlistName, trackURIs).then(playlistVersion => {
+      savedPlaylistTracks = [];
+      setPlaylistName('New Playlist');
+      setPlaylistTracks(savedPlaylistTracks);
+    })
+  }
+
+  function addTrack(track) {
+    if (playlistTracks.find(savedTrack => savedTrack.id === track.id)) {
+      return;
+    } else {
+      savedPlaylistTracks.push(track);
+      setPlaylistTracks([...savedPlaylistTracks]);
+    }
+  }
+
+  function search(term) {
+    Spotify.search(term).then(tracks => {
+      setSearchResults(tracks);
+    });
+  }
+
+  return(
+    <div>
+      <h1>Ja<span className="highlight">mmm</span>ing</h1>
+      <div className="App">
+        <SearchBar onSearch={search} />
+        <div className="App-playlist">
+          <SearchResults searchResults={searchResults} onAdd={addTrack} />
+          <Playlist playlistName={playlistName} playlistTracks={playlistTracks} onRemove={removeTrack} onNameChange={updatePlaylistName} onSave={savePlaylist} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -88,6 +148,6 @@ class App extends React.Component {
       </div>
     );
   }
-}
+} */
 
 export default App;
